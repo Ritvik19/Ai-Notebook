@@ -1,0 +1,11 @@
+{
+    "briefing-doc": "Generate a briefing document from the given excerpt.",
+    "faq": "Generate FAQs from the given excerpt",
+    "outline": "Generate an outline from the given excerpt.",
+    "podcast": "Transform the excerpt into a podcast script {query}.",
+    "research-insights": "Summarize the key insights from the excerpt.",
+    "study-guide": "Create a study guide from the excerpt.",
+    "summary-article": "Generate a summary of the article.",
+    "timeline": "Generate a timeline from the given excerpt.",
+    "toc": "Generate a table of contents for the given excerpt."
+}
