@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Notebook AI", layout="wide")
+st.set_page_config(page_title="AI Notebook", layout="wide")
 
 from converse import get_response
 from models import LLMs
@@ -33,7 +33,7 @@ with tab1:
     with col2:
         st.write("All Sources")
         sources_display_manage = st.empty()
-        indices_to_delete = st.text_input("Indices to delete", value="")
+        indices_to_delete = st.text_input("Indices to delete (space separated)", value="")
         sources_delete_button = st.button("Delete")
 
 
@@ -57,7 +57,7 @@ with tab2:
             for function in functions:
                 st.code(function)
         sources_display_converse = st.empty()
-        selected_sources = st.text_input("Selected sources (comma separated)", value="")
+        selected_sources = st.text_input("Selected sources (space separated)", value="")
     with col2:
         for e, message in enumerate(st.session_state.messages):
             with st.chat_message(message["role"]):

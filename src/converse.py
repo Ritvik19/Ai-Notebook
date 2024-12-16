@@ -5,12 +5,13 @@ import pandas as pd
 from models import LLMs
 from prompts import PROMPT_DICT, RAG
 from sources import read_sources
+from utils_hf_news import hf_news
 
 
 def parse_sources(sources):
     if sources.strip() == "":
         return []
-    return [int(source_id) for source_id in sources.split(",")]
+    return [int(source_id) for source_id in sources.split()]
 
 
 def parse_string(input_string, default_model="gemma2"):
@@ -30,6 +31,7 @@ def call_model(model_name, conversation):
     return LLMs[model_name].invoke(conversation).content
 
 def get_response(input_string, sources_string, session_state):
+    input_string = input_string.strip()
     parsed_string = parse_string(input_string)
     parsed_sources = parse_sources(sources_string)
     context = "\n\n".join(read_sources().loc[parsed_sources]["text"].values)
@@ -59,6 +61,8 @@ def handle_function(_function, query, session_state, model_name, context):
         return save_conversation(query, session_state)
     elif _function == "clear":
         return clear_conversation(session_state)
+    elif _function == "hf-news":
+        return hf_news(query, session_state, model_name)
     elif _function in PROMPT_DICT:
         return generate_response(model_name, _function, query, context, session_state)
     else:

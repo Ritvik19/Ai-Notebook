@@ -1,13 +1,12 @@
 import os
 import re
+
 import pandas as pd
 import requests
 import streamlit as st
 
 from utils_pdf import process_pdf
-from utils_youtube import download_subtitles, load_transcript, get_video_title
-
-
+from utils_youtube import download_subtitles, get_video_title, load_transcript
 
 SOURCES_FILE = "sources.jsonl"
 
@@ -31,7 +30,7 @@ def add_source(sources_display, sources_selection_display, **sources):
 
 def remove_sources(indices_to_delete, sources_display_manage, sources_display_converse):
     sources = read_sources()
-    indices = [int(i) for i in indices_to_delete.split(",") if i != ""]
+    indices = [int(i) for i in indices_to_delete.split() if i != ""]
     sources = sources.drop(indices)
     sources.to_json(SOURCES_FILE, lines=True, orient="records")
     display_sources(sources_display_manage, sources_display_converse)
