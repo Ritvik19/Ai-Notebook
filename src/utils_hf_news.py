@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from tqdm.auto import tqdm
 
 from models import LLMs
 from prompts import PAPER_SUMMARY_PROMPT as prompt
@@ -75,13 +76,15 @@ def hf_news(date, session_state, model_name):
     date = date.strip()
     if date == "":
         date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    print(date)
     url = f"https://huggingface.co/papers?date={date}"
     content = fetch_page_content(url)
     model = LLMs[model_name]
 
     articles = content.select("article")
+    print(len(articles))
     data = []
-    for article in articles:
+    for article in tqdm(articles):
         title, archive_url, hf_url, image_url = extract_article_data(article)
         abstract, summary = fetch_and_summarize_abstract(hf_url, model)
         
