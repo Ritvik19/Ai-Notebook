@@ -6,6 +6,7 @@ from models import LLMs
 from prompts import PROMPT_DICT, RAG
 from sources import read_sources
 from utils_hf_news import hf_news
+from datetime import datetime
 
 
 def parse_sources(sources):
@@ -28,7 +29,8 @@ def parse_string(input_string, default_model="gemma2"):
     return res
 
 def call_model(model_name, conversation):
-    return LLMs[model_name].invoke(conversation).content
+    response = LLMs[model_name].invoke(conversation).content
+    return "\n".join(response) if model_name == "gemini-thinking" else response
 
 def get_response(input_string, sources_string, session_state):
     input_string = input_string.strip()
@@ -110,7 +112,7 @@ def generate_response(model_name, function, query, context, session_state):
         "role": "user", "content": PROMPT_DICT[function]["instruction"].format(query=query), "context": context
     })
     session_state.messages.append({"role": "assistant", "content": llm_response})
-    
+    pd.DataFrame(session_state.messages).to_json(f"../logs/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.jsonl", lines=True, orient="records")
     return llm_response
 
 
@@ -121,5 +123,5 @@ def handle_query(query, model_name, context, session_state):
     llm_response = call_model(model_name, conversation)
     session_state.messages.append({"role": "user", "content": query, "context": context})
     session_state.messages.append({"role": "assistant", "content": llm_response})
-    
+    pd.DataFrame(session_state.messages).to_json(f"../logs/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.jsonl", lines=True, orient="records") 
     return llm_response
