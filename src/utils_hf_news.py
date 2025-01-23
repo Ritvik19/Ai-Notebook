@@ -80,7 +80,7 @@ def hf_news(date, session_state, model_name):
         beg_date = "2023-05-04"
         letters = []
         for date in pd.date_range(beg_date, end_date).strftime('%Y-%m-%d'):
-            if f"newsletter-{date}.jsonl" not in os.listdir("../saved-data"):
+            if f"newsletter-{date}.jsonl" not in os.listdir("../newsletters"):
                 print(f"Fetching newsletter for {date}")
                 letters.append(hf_news(date, session_state, model_name))
         return "\n\n".join(letters)
@@ -106,7 +106,7 @@ def hf_news(date, session_state, model_name):
             "abstract": abstract,
             "summary": summary
         })
-    pd.DataFrame(data).to_json(f"../saved-data/newsletter-{date}.jsonl", lines=True, orient="records")
+    pd.DataFrame(data).to_json(f"../newsletters/newsletter-{date}.jsonl", lines=True, orient="records")
 
     newsletter = generate_newsletter(date, data)
     session_state["messages"].extend([
@@ -115,6 +115,3 @@ def hf_news(date, session_state, model_name):
     ])    
     
     return newsletter
-
-
-
