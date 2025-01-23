@@ -1,5 +1,6 @@
 import time
 from datetime import datetime, timedelta
+import os
 
 import pandas as pd
 import requests
@@ -74,6 +75,16 @@ def generate_newsletter(date, data):
 
 def hf_news(date, session_state, model_name):
     date = date.strip()
+    if date == "-r":
+        end_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        beg_date = "2023-05-04"
+        letters = []
+        for date in pd.date_range(beg_date, end_date).strftime('%Y-%m-%d'):
+            if f"newsletter-{date}.jsonl" not in os.listdir("../saved-data"):
+                print(f"Fetching newsletter for {date}")
+                letters.append(hf_news(date, session_state, model_name))
+        return "\n\n".join(letters)
+    
     if date == "":
         date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
     print(date)
