@@ -1,10 +1,11 @@
 import re
+import shutil
 
 import pandas as pd
 
 from models import LLMs
 from prompts import PROMPT_DICT, RAG
-from sources import read_sources
+from sources import read_sources, SOURCES_FILE
 from utils_hf_news import hf_news
 from datetime import datetime
 
@@ -61,6 +62,8 @@ def handle_function(_function, query, session_state, model_name, context):
         return unpin_message(query, session_state)
     elif _function == "save":
         return save_conversation(query, session_state)
+    elif _function == "load":
+        return load_conversation(query, session_state)
     elif _function == "clear":
         return clear_conversation(session_state)
     elif _function == "hf-news":
@@ -98,6 +101,13 @@ def save_conversation(query, session_state):
     
     return "Conversation, Pinned Notes, Sources saved"
 
+def load_conversation(query, session_state):
+    session_state.messages = pd.read_json(f"../saved-data/{query}-conversation.jsonl", lines=True).to_dict(orient="records")
+    session_state.pinned = pd.read_json(f"../saved-data/{query}-pinned.jsonl", lines=True).to_dict(orient="records")
+    shutil.copy(f"../saved-data/{query}-sources.jsonl", SOURCES_FILE)
+    read_sources()
+
+    return "Conversation will be loaded"
 
 def clear_conversation(session_state):
     session_state.messages = []
