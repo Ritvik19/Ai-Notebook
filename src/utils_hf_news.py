@@ -1,6 +1,6 @@
+import os
 import time
 from datetime import datetime, timedelta
-import os
 
 import pandas as pd
 import requests
