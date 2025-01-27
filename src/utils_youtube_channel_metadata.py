@@ -88,21 +88,25 @@ def backstagewithmillionaires(model, dates):
             except Exception as e:
                 print(f"Failed to process video {date} due to error: {e}")
 
-def backstagewithmillionaires_newsletter(session_state, model_name):
+
+CHANNELS = {
+    "backstagewithmillionaires": backstagewithmillionaires,
+}
+
+def youtube_newsletter(channel, session_state, model_name):
     today = datetime.now()
     past_7_days = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
 
     model = LLMs[model_name]
-    backstagewithmillionaires(model, past_7_days)
-
+    CHANNELS[channel](model, past_7_days)
     for date in past_7_days:
-        if os.path.exists(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json"):
-            newsletter = json.load(open(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json"))["Newsletter"]
+        if os.path.exists(f"../youtube_news/{channel}/newsletters/{date}.json"):
+            newsletter = json.load(open(f"../youtube_news/{channel}/newsletters/{date}.json"))["Newsletter"]
             break
         else:
-            newsletter = "No newsletter found for the past 7 days."
+            newsletter = f"No newsletter found for the past 7 days for {channel}."
     session_state["messages"].extend([
-        {"role": "user", "content": "Fetch me the Backstage with millionaires newsletter from the past 7 days"},
+        {"role": "user", "content": f"Fetch me the {channel} newsletter from the past 7 days"},
         {"role": "assistant", "content": newsletter}
     ])
     return newsletter

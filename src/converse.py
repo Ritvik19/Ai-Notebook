@@ -8,7 +8,7 @@ from models import LLMs
 from prompts import PROMPT_DICT, RAG
 from sources import SOURCES_FILE, read_sources
 from utils_hf_news import hf_news
-from utils_youtube_channel_metadata import backstagewithmillionaires_newsletter
+from utils_youtube_channel_metadata import youtube_newsletter
 
 
 def parse_sources(sources):
@@ -70,7 +70,7 @@ def handle_function(_function, query, session_state, model_name, context):
     elif _function == "hf-news":
         return hf_news(query, session_state, model_name)
     elif _function == "bwm-news":
-        return backstagewithmillionaires_newsletter(session_state, model_name)
+        return youtube_newsletter("backstagewithmillionaires", session_state, model_name)
     elif _function in PROMPT_DICT:
         return generate_response(model_name, _function, query, context, session_state)
     else:
