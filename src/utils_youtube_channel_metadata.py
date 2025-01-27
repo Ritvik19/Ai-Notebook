@@ -82,7 +82,7 @@ def backstagewithmillionaires(model, dates):
                     "URL": row.URL, 
                     "Upload Date": date,
                     "Transcript": transcript,
-                    "Newsletter": f"# Backstage with millionaires newsletter from {date}" + create_article(transcript, model)
+                    "Newsletter": f"# Backstage with millionaires newsletter from {date}" + create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
                 }
                 with open(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json", "w") as file:
                     json.dump(data, file)
@@ -109,7 +109,7 @@ def marketsbyzerodha(model, dates):
                     "URL": row.URL, 
                     "Upload Date": date,
                     "Transcript": transcript,
-                    "Newsletter": f"# Markets by Zerodha newsletter from {date}" + create_article(transcript, model)
+                    "Newsletter": f"# Markets by Zerodha newsletter from {date}" + create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
                 }
                 with open(f"../youtube_news/marketsbyzerodha/newsletters/{date}.json", "w") as file:
                     json.dump(data, file)
