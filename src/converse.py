@@ -71,6 +71,8 @@ def handle_function(_function, query, session_state, model_name, context):
         return hf_news(query, session_state, model_name)
     elif _function == "bwm-news":
         return youtube_newsletter("backstagewithmillionaires", session_state, model_name)
+    elif _function == "mbz-news":
+        return youtube_newsletter("marketsbyzerodha", session_state, model_name)
     elif _function in PROMPT_DICT:
         return generate_response(model_name, _function, query, context, session_state)
     else:

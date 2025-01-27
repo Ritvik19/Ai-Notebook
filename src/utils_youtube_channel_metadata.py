@@ -63,6 +63,7 @@ def fetch_youtube_channel_data(channel_name):
 
 
 def backstagewithmillionaires(model, dates):
+    print("Fetching data for Backstage with Millionaires channel.", dates)
     fetch_youtube_channel_data("backstagewithmillionaires")
     df = pd.read_csv("../youtube_news/backstagewithmillionaires/video_metadata.csv")
     df = df[df.Title.str.contains("Indian Startup News", case=False)].reset_index(drop=True)
@@ -88,9 +89,37 @@ def backstagewithmillionaires(model, dates):
             except Exception as e:
                 print(f"Failed to process video {date} due to error: {e}")
 
+def marketsbyzerodha(model, dates):
+    print("Fetching data for Markets by Zerodha channel.")
+    fetch_youtube_channel_data("marketsbyzerodha")
+    df = pd.read_csv("../youtube_news/marketsbyzerodha/video_metadata.csv")
+    df = df[df.Title.str.contains("The Daily Brief", case=False)].reset_index(drop=True)
+    df["Edition"] = df.Title.str.extract(r"The Daily Brief #(\d+)", expand=False)
+
+    for i, row in tqdm(df.iterrows(), total=len(df)):
+        date = str(row["Upload Date"])  
+        date = date[:4] + "-" + date[4:6] + "-" + date[6:]
+        if date in dates and (not os.path.exists(f"../youtube_news/marketsbyzerodha/newsletters/{date}.json")):
+            try:
+                download_subtitles(row.URL)
+                transcript = load_transcript()
+                data = {
+                    "Edition": row.Edition, 
+                    "Title": row.Title,
+                    "URL": row.URL, 
+                    "Upload Date": date,
+                    "Transcript": transcript,
+                    "Newsletter": f"# Markets by Zerodha newsletter from {date}" + create_article(transcript, model)
+                }
+                with open(f"../youtube_news/marketsbyzerodha/newsletters/{date}.json", "w") as file:
+                    json.dump(data, file)
+            except Exception as e:
+                print(f"Failed to process video {date} due to error: {e}")
+
 
 CHANNELS = {
     "backstagewithmillionaires": backstagewithmillionaires,
+    "marketsbyzerodha": marketsbyzerodha,
 }
 
 def youtube_newsletter(channel, session_state, model_name):
