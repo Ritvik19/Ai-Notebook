@@ -8,8 +8,9 @@ from datetime import datetime, timedelta
 
 from models import LLMs
 from prompts import PROMPT_DICT
+from utils_youtube import download_subtitles, load_transcript
 
-ARTICLE_PROMPT = PROMPT_DICT["summary-article"]
+ARTICLE_PROMPT = PROMPT_DICT["summary-article"]["prompt"]
 
 def fetch_youtube_channel_data(channel_name):
     metadata_file = f"../youtube_news/{channel_name}/video_metadata.csv"
@@ -79,7 +80,7 @@ def backstagewithmillionaires(model, dates):
                     "URL": row.URL, 
                     "Upload Date": date,
                     "Transcript": transcript,
-                    "Newsletter": create_article(transcript, model)
+                    "Newsletter": f"# Backstage with millionaires newsletter from {date}" + create_article(transcript, model)
                 }
                 with open(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json", "w") as file:
                     json.dump(data, file)
@@ -96,7 +97,6 @@ def backstagewithmillionaires_newsletter(session_state, model_name):
     for date in past_7_days:
         if os.path.exists(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json"):
             newsletter = json.load(open(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json"))["Newsletter"]
-            newsletter = f"Backstage with millionaires newsletter from {date}:\n\n{newsletter}"
             break
         else:
             newsletter = "No newsletter found for the past 7 days."
@@ -112,7 +112,10 @@ def create_article(transcript, model, retries=10, delay=30):
             response = model.invoke([
                 {"role": "user", "content": ARTICLE_PROMPT.format(context=transcript)},
             ])
-            return "\n".join([f"* {line}" for line in response.content.strip().split(". ")])
+            article = response.content
+            _, *article = article.split("\n")
+            article = "\n".join(article)
+            return article
         except Exception as e:
             print(f"Attempt {attempt + 1} failed with error: {e}")
             if attempt < retries - 1:
