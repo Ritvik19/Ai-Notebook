@@ -32,7 +32,7 @@ def parse_string(input_string, default_model="gemma2"):
 
 def call_model(model_name, conversation):
     response = LLMs[model_name].invoke(conversation).content
-    return "\n".join(response) if model_name == "gemini-thinking" else response
+    return response
 
 def get_response(input_string, sources_string, session_state):
     input_string = input_string.strip()
