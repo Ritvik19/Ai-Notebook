@@ -1,6 +1,7 @@
 import re
 import shutil
 from datetime import datetime
+import os
 
 import pandas as pd
 
@@ -65,6 +66,10 @@ def handle_function(_function, query, session_state, model_name, context):
         return save_conversation(query, session_state)
     elif _function == "load":
         return load_conversation(query, session_state)
+    elif _function == "list":
+        return list_saved_conversations()
+    elif _function == "delete":
+        return delete_saved_conversation(query)
     elif _function == "clear":
         return clear_conversation(session_state)
     elif _function == "hf-news":
@@ -115,6 +120,15 @@ def load_conversation(query, session_state):
     read_sources()
 
     return "Conversation will be loaded"
+
+def list_saved_conversations():
+    return [file.split("-")[0] for file in os.listdir("../saved-data") if file.endswith("conversation.jsonl")]
+
+def delete_saved_conversation(query):
+    for file in os.listdir("../saved-data"):
+        if file.startswith(query):
+            os.remove(f"../saved-data/{file}")
+    return "Conversation will be deleted"
 
 def clear_conversation(session_state):
     session_state.messages = []
