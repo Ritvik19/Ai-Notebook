@@ -53,7 +53,12 @@ with tab2:
                 st.code(model)
 
         with st.expander("Functions"):
-            functions = [f"/{func}" for func in ["pin", "unpin", "save", "clear", *PROMPT_DICT.keys()]]
+            functions = [f"/{func}" for func in [
+                "pin", "unpin", 
+                "save", "load", "list", "delete", "clear", 
+                "hf-news", "mbz-news", "bwm-news", "news",  
+                *PROMPT_DICT.keys()
+            ]]
             for function in functions:
                 st.code(function)
         sources_display_converse = st.empty()
