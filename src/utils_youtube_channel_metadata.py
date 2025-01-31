@@ -62,7 +62,8 @@ def fetch_youtube_channel_data(channel_name):
     print(f"Saved metadata for {len(data)} videos to {metadata_file}.")
 
 
-def backstagewithmillionaires(model, dates):
+def backstagewithmillionaires(dates):
+    model = LLMs["gemini-pro"]
     print("Fetching data for Backstage with Millionaires channel.", dates)
     fetch_youtube_channel_data("backstagewithmillionaires")
     df = pd.read_csv("../youtube_news/backstagewithmillionaires/video_metadata.csv")
@@ -82,14 +83,15 @@ def backstagewithmillionaires(model, dates):
                     "URL": row.URL, 
                     "Upload Date": date,
                     "Transcript": transcript,
-                    "Newsletter": f"# Backstage with millionaires newsletter from {date}" + create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
+                    "Newsletter": create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
                 }
                 with open(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json", "w") as file:
                     json.dump(data, file)
             except Exception as e:
                 print(f"Failed to process video {date} due to error: {e}")
 
-def marketsbyzerodha(model, dates):
+def marketsbyzerodha(dates):
+    model = LLMs["gemini-pro"]
     print("Fetching data for Markets by Zerodha channel.")
     fetch_youtube_channel_data("marketsbyzerodha")
     df = pd.read_csv("../youtube_news/marketsbyzerodha/video_metadata.csv")
@@ -109,7 +111,7 @@ def marketsbyzerodha(model, dates):
                     "URL": row.URL, 
                     "Upload Date": date,
                     "Transcript": transcript,
-                    "Newsletter": f"# Markets by Zerodha newsletter from {date}" + create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
+                    "Newsletter": create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
                 }
                 with open(f"../youtube_news/marketsbyzerodha/newsletters/{date}.json", "w") as file:
                     json.dump(data, file)
@@ -118,19 +120,21 @@ def marketsbyzerodha(model, dates):
 
 
 CHANNELS = {
-    "backstagewithmillionaires": backstagewithmillionaires,
-    "marketsbyzerodha": marketsbyzerodha,
+    "backstagewithmillionaires": {"func": backstagewithmillionaires, "name": "Backstage with Millionaires"},
+    "marketsbyzerodha": {"func": marketsbyzerodha, "name": "Markets by Zerodha"},
 }
 
-def youtube_newsletter(channel, session_state, model_name):
+
+def youtube_newsletter(channel, session_state, model_name="gemini-pro"):
     today = datetime.now()
     past_7_days = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
 
-    model = LLMs[model_name]
-    CHANNELS[channel](model, past_7_days)
+    CHANNELS[channel]["func"](past_7_days)
     for date in past_7_days:
         if os.path.exists(f"../youtube_news/{channel}/newsletters/{date}.json"):
             newsletter = json.load(open(f"../youtube_news/{channel}/newsletters/{date}.json"))["Newsletter"]
+            _, *rest = newsletter.split("\n\n")
+            newsletter = f"# {CHANNELS[channel]['name']} newsletter from {date}\n\n" + "\n\n".join(rest)
             break
         else:
             newsletter = f"No newsletter found for the past 7 days for {channel}."
@@ -147,8 +151,6 @@ def create_article(transcript, model, retries=10, delay=30):
                 {"role": "user", "content": ARTICLE_PROMPT.format(context=transcript)},
             ])
             article = response.content
-            _, *article = article.split("\n")
-            article = "\n".join(article)
             return article
         except Exception as e:
             print(f"Attempt {attempt + 1} failed with error: {e}")
