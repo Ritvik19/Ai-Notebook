@@ -23,7 +23,7 @@ with tab1:
         uploaded_file = st.file_uploader(
             "Choose a text file",
             accept_multiple_files=True,
-            type=["txt", "md", "csv", "tsv", "ods", "xls", "xlsx", "xlsb", "xlsm", "pdf"],
+            type=["txt", "md", "csv", "tsv", "ods", "xls", "xlsx", "xlsb", "xlsm", "pdf", "ytf"],
         )
         url = st.text_input("Enter a webpage / youtube / pdf URL")
         l, r = st.columns([1, 1])

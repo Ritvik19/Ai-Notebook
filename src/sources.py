@@ -65,13 +65,16 @@ def add_file(files):
     csv_files = [file for file in files if file.name.endswith((".csv", ".tsv"))]
     csv_sources = csv_files_to_sources(csv_files)
 
+    ytf_files = [file for file in files if file.name.endswith(".ytf")]
+    ytf_sources = ytf_files_to_sources(ytf_files)
+
     excel_files = [file for file in files if file.name.endswith((".xls", ".xlsx", ".xlsb", ".xlsm", ".ods"))]
     excel_sources = excel_files_to_sources(excel_files)
 
     pdf_files = [file for file in files if file.name.endswith(".pdf")]
     pdf_sources = pdf_files_to_sources(pdf_files)
 
-    append_sources(pd.concat([text_sources, csv_sources, excel_sources, pdf_sources]))    
+    append_sources(pd.concat([text_sources, csv_sources, ytf_sources, excel_sources, pdf_sources]))    
 
 def add_web(url):
     if "youtu.be" in url or "youtube.com" in url:
@@ -102,6 +105,22 @@ def csv_files_to_sources(csv_files):
             }
         )   
     return pd.DataFrame(sources) 
+
+def ytf_files_to_sources(ytf_files):
+    sources = []
+    for file in ytf_files:
+        df = pd.read_csv(file)
+        for _, row in df.iterrows():
+            sources.append(
+                {
+                    "timestamp": pd.Timestamp.now(),
+                    "title": row["Title"],
+                    "text": row["Content"],
+                }
+            )
+    return pd.DataFrame(sources)
+
+            
 
 def excel_files_to_sources(excel_files):
     sources = []
