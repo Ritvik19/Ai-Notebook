@@ -96,16 +96,19 @@ def hf_news(date, session_state, model_name):
     print(len(articles))
     data = []
     for article in tqdm(articles):
-        title, archive_url, hf_url, image_url = extract_article_data(article)
-        abstract, summary = fetch_and_summarize_abstract(hf_url, model)
-        
-        data.append({
-            "title": title,
-            "url": archive_url,
-            "image": image_url,
-            "abstract": abstract,
-            "summary": summary
-        })
+        try:
+            title, archive_url, hf_url, image_url = extract_article_data(article)
+            abstract, summary = fetch_and_summarize_abstract(hf_url, model)
+            
+            data.append({
+                "title": title,
+                "url": archive_url,
+                "image": image_url,
+                "abstract": abstract,
+                "summary": summary
+            })
+        except:
+            print(f"Failed to process article: {article}")
     pd.DataFrame(data).to_json(f"../newsletters/newsletter-{date}.jsonl", lines=True, orient="records")
 
     newsletter = generate_newsletter(date, data)

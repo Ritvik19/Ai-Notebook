@@ -83,7 +83,7 @@ def backstagewithmillionaires(dates):
                     "URL": row.URL, 
                     "Upload Date": date,
                     "Transcript": transcript,
-                    "Newsletter": create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
+                    "Newsletter": create_article(transcript, model)
                 }
                 with open(f"../youtube_news/backstagewithmillionaires/newsletters/{date}.json", "w") as file:
                     json.dump(data, file)
@@ -111,7 +111,7 @@ def marketsbyzerodha(dates):
                     "URL": row.URL, 
                     "Upload Date": date,
                     "Transcript": transcript,
-                    "Newsletter": create_article(transcript, model) + f"\n\n[Watch the video here]({row.URL})"
+                    "Newsletter": create_article(transcript, model)
                 }
                 with open(f"../youtube_news/marketsbyzerodha/newsletters/{date}.json", "w") as file:
                     json.dump(data, file)
@@ -132,9 +132,10 @@ def youtube_newsletter(channel, session_state, model_name="gemini-pro"):
     CHANNELS[channel]["func"](past_7_days)
     for date in past_7_days:
         if os.path.exists(f"../youtube_news/{channel}/newsletters/{date}.json"):
-            newsletter = json.load(open(f"../youtube_news/{channel}/newsletters/{date}.json"))["Newsletter"]
+            data = json.load(open(f"../youtube_news/{channel}/newsletters/{date}.json"))
+            newsletter = data["Newsletter"]
             _, *rest = newsletter.split("\n\n")
-            newsletter = f"# {CHANNELS[channel]['name']} newsletter from {date}\n\n" + "\n\n".join(rest)
+            newsletter = f"# {CHANNELS[channel]['name']} newsletter from {date}\n\n" + "\n\n".join(rest)  + f"\n\n[Watch the video here]({data['URL']})"
             break
         else:
             newsletter = f"No newsletter found for the past 7 days for {channel}."
