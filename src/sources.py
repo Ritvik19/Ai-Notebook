@@ -120,8 +120,6 @@ def ytf_files_to_sources(ytf_files):
             )
     return pd.DataFrame(sources)
 
-            
-
 def excel_files_to_sources(excel_files):
     sources = []
     for file in excel_files:
