@@ -23,8 +23,9 @@ def add_source(sources_display, sources_selection_display, **sources):
         add_text(copied_text)
     if uploaded_file := sources.get("uploaded_file"):
         add_file(uploaded_file)
-    if url := sources.get("url"):
-        add_web(url)
+    if urls := sources.get("urls"):
+        for url in urls.split("\n"):
+            add_web(url)
     display_sources(sources_display, sources_selection_display)
 
 

@@ -25,7 +25,7 @@ with tab1:
             accept_multiple_files=True,
             type=["txt", "md", "csv", "tsv", "ods", "xls", "xlsx", "xlsb", "xlsm", "pdf", "ytf"],
         )
-        url = st.text_input("Enter a webpage / youtube / pdf URL")
+        urls = st.text_area("Enter a webpage / youtube / pdf URL")
         l, r = st.columns([1, 1])
         add_source_button = l.button("Add Source")
         clear_sources_button = r.button("Clear Sources")
@@ -90,7 +90,7 @@ if add_source_button:
         sources_selection_display=sources_display_converse,
         copied_text=copied_text,
         uploaded_file=uploaded_file,
-        url=url
+        urls=urls.strip()
     )
 if clear_sources_button:
     clear_sources(sources_display_manage, sources_display_converse)
