@@ -1,3 +1,4 @@
+import re
 import os
 import time
 from datetime import datetime, timedelta
@@ -45,6 +46,7 @@ def fetch_page_content(url):
 
 def extract_article_data(article):
     title = article.select_one("h3 > a").text
+    title = re.sub(r"\s+", " ", title)
     relative_url = article.select_one("h3 > a").get("href")
     hf_url = f"https://huggingface.co{relative_url}"
     archive_url = relative_url.replace("/papers", "https://arxiv.org/abs")
@@ -98,6 +100,7 @@ def hf_news(date, session_state, model_name):
     for article in tqdm(articles):
         try:
             title, archive_url, hf_url, image_url = extract_article_data(article)
+            print(title)
             abstract, summary = fetch_and_summarize_abstract(hf_url, model)
             
             data.append({
