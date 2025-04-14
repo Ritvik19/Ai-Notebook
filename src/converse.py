@@ -18,7 +18,7 @@ def parse_sources(sources):
     return [int(source_id) for source_id in sources.split()]
 
 
-def parse_string(input_string, default_model="gemma2"):
+def parse_string(input_string, default_model="learnlm"):
     res = {"model_name": default_model, "function": None, "query": None}
     if input_string.startswith("@"):
         input_ = input_string[1:].split(" ")
