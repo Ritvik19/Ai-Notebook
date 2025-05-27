@@ -8,8 +8,6 @@ import pandas as pd
 from models import LLMs
 from prompts import PROMPT_DICT, RAG
 from sources import SOURCES_FILE, read_sources
-from utils_hf_news import hf_news
-from utils_youtube_channel_metadata import youtube_newsletter
 
 
 def parse_sources(sources):
@@ -18,7 +16,7 @@ def parse_sources(sources):
     return [int(source_id) for source_id in sources.split()]
 
 
-def parse_string(input_string, default_model="learnlm"):
+def parse_string(input_string, default_model="gemini-2"):
     res = {"model_name": default_model, "function": None, "query": None}
     if input_string.startswith("@"):
         input_ = input_string[1:].split(" ")
@@ -72,14 +70,6 @@ def handle_function(_function, query, session_state, model_name, context):
         return delete_saved_conversation(query)
     elif _function == "clear":
         return clear_conversation(session_state)
-    elif _function == "hf-news":
-        return hf_news(query, session_state, model_name)
-    elif _function == "bwm-news":
-        return youtube_newsletter("backstagewithmillionaires", session_state, model_name)
-    elif _function == "mbz-news":
-        return youtube_newsletter("marketsbyzerodha", session_state, model_name)
-    elif _function == "news":
-        return hf_news(query, session_state, model_name) + "\n\n---\n\n" + youtube_newsletter("backstagewithmillionaires", session_state, model_name) + "\n\n---\n\n" + youtube_newsletter("marketsbyzerodha", session_state, model_name)
     elif _function in PROMPT_DICT:
         return generate_response(model_name, _function, query, context, session_state)
     else:
